@@ -22,9 +22,7 @@ function getOneFile(req, res) {
     let pathname = parseUrl(req.url).pathname;
     let query = qsParse(url.query);
     let id = req.params.id;
-    console.log(id);
-    console.log('pathname: ', pathname);
-    sander.readFile(`.${pathname}/${id}`)
+    sander.readFile(`.${pathname}/${query.name}`)
         .then((result) => {
             res.writeHead(200, {'Content-Type': 'text/plain'});
             res.write(`${result}`);
