@@ -1,6 +1,7 @@
 const sander = require('sander');
 const parseUrl = require('url').parse;
 const qsParse = require('querystring').parse;
+const path = require('path');
 
 function getFileList(req, res) {
     let pathname = parseUrl(req.url).pathname;
@@ -17,22 +18,26 @@ function getFileList(req, res) {
         });
 }
 
-function getOneFile(req, res) {
-    let url = parseUrl(req.url);
-    let pathname = parseUrl(req.url).pathname;
-    let query = qsParse(url.query);
-    let id = req.params.id;
-    sander.readFile(`.${pathname}/${query.name}`)
-        .then((result) => {
-            res.writeHead(200, {'Content-Type': 'text/plain'});
-            res.write(`${result}`);
-            res.end();
-        })
-        .catch((err) => {
-            res.writeHead(400, {'Content-Type': 'text/plain'});
-            res.write(err.message);
-            res.end();
-        });
+function getOneFile(id) {
+    // let url = parseUrl(req.url);
+    // let pathname = parseUrl(req.url).pathname;
+    // let query = qsParse(url.query);
+
+    let pathname = path.join(__dirname, '/cities/');
+    console.log('id from fsFunc: ', id);
+    console.log('pathname: ', pathname);
+    // sander.readFile(pathname + id)
+        // .then((result) => {
+        //     res.writeHead(200, {'Content-Type': 'text/plain'});
+        //     res.write(`${result}`);
+        //     res.end();
+        // })
+        // .catch((err) => {
+        //     res.writeHead(400, {'Content-Type': 'text/plain'});
+        //     res.write(err.message);
+        //     res.end();
+        // });
+    return sander.readFile(pathname + id + '.txt');
 }
 
 function createFile(req, res, filename, data) {
