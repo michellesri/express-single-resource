@@ -3,27 +3,26 @@ const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const assert = require('chai').assert;
 const expect = require('chai').expect;
-const routes = require('../lib/routes/cityRoutes');
 const path = require('path');
 const rimraf = require('rimraf');
-const mkdirp = require('mkdirp');
+// const mkdirp = require('mkdirp');
+const app = require('../lib/app');
 
 const citiesDir = path.resolve(__dirname, '../cities');
 
 describe('http server functionality', () => {
-  let req = chai.request(routes);
+  let req = chai.request(app);
 
   before(() => {
     rimraf.sync(citiesDir);
-    mkdirp.sync(citiesDir);
   });
 
-  const dushanbe = {name: 'dushanbe'};
-  let stringDush = JSON.stringify(dushanbe);
+  const portland = {name: 'portland'};
+  let stringDush = JSON.stringify(portland);
 
   it('accesses empty file before initial POST', done => {
     req
-            .get('/cities')
+            .get('/api/cities')
             .then(res => {
               assert.deepEqual(res.body, {});
               done();
@@ -32,9 +31,9 @@ describe('http server functionality', () => {
   });
 
   it('POSTs successfully', done => {
-    let responseText = 'File dushanbe.txt successfully created in \'cities\' directory.';
+    let responseText = 'File portland.txt successfully created in \'cities\' directory.';
     req
-            .post('/cities')
+            .post('/api/cities')
             .set('Content-Type', 'application/json')
             .send(stringDush)
             .then(res => {
@@ -46,10 +45,10 @@ describe('http server functionality', () => {
 
   it('GETs all files in directory after initial POST', done => {
     req
-            .get('/cities')
+            .get('/api/cities')
             .then(res => {
               expect(res).status(200);
-              assert.equal(res.text, 'dushanbe.txt\n');
+              assert.equal(res.text, 'portland.txt\n');
               done();
             })
             .catch(done);
@@ -57,19 +56,19 @@ describe('http server functionality', () => {
 
   it('GETs a single file', done => {
     req
-            .get('/cities/dushanbe')
+            .get('/api/cities/portland')
             .then(res => {
               expect(res).status(200);
-              assert.equal(res.text, 'dushanbe');
+              assert.equal(res.text, 'portland');
               done();
             })
             .catch(done);
   });
 
   it('replaces a file using PUT', done => {
-    let responseText = 'File dushanbe.txt successfully replaced.';
+    let responseText = 'File portland.txt successfully replaced.';
     req
-            .put('/cities')
+            .put('/api/cities/portland')
             .set('Content-Type', 'application/json')
             .send(stringDush)
             .then(res => {
@@ -81,9 +80,9 @@ describe('http server functionality', () => {
   });
 
   it('DELETEs a file', done => {
-    let responseText = 'File dushanbe.txt successfully deleted.';
+    let responseText = 'File portland.txt successfully deleted.';
     req
-            .del('/cities/dushanbe')
+            .del('/api/cities/portland')
             .then(res => {
               expect(res).status(200);
               assert.equal(res.text, responseText);
