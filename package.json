@@ -8,7 +8,7 @@
     "pretest": "npm run lint",
     "test": "mocha",
     "watch": "npm run test -- -w",
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
