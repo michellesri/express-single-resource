@@ -22,7 +22,7 @@ describe('http server functionality', () => {
 
   it('accesses empty file before initial POST', done => {
     req
-            .get('/api/cities')
+            .get('/cities')
             .then(res => {
               assert.deepEqual(res.body, {});
               done();
@@ -33,7 +33,7 @@ describe('http server functionality', () => {
   it('POSTs successfully', done => {
     let responseText = 'File portland.txt successfully created in \'cities\' directory.';
     req
-            .post('/api/cities')
+            .post('/cities')
             .set('Content-Type', 'application/json')
             .send(stringDush)
             .then(res => {
@@ -45,7 +45,7 @@ describe('http server functionality', () => {
 
   it('GETs all files in directory after initial POST', done => {
     req
-            .get('/api/cities')
+            .get('/cities')
             .then(res => {
               expect(res).status(200);
               assert.equal(res.text, 'portland.txt\n');
@@ -56,7 +56,7 @@ describe('http server functionality', () => {
 
   it('GETs a single file', done => {
     req
-            .get('/api/cities/portland')
+            .get('/cities/portland')
             .then(res => {
               expect(res).status(200);
               assert.equal(res.text, 'portland');
@@ -68,7 +68,7 @@ describe('http server functionality', () => {
   it('replaces a file using PUT', done => {
     let responseText = 'File portland.txt successfully replaced.';
     req
-            .put('/api/cities/portland')
+            .put('/cities/portland')
             .set('Content-Type', 'application/json')
             .send(stringDush)
             .then(res => {
@@ -82,7 +82,7 @@ describe('http server functionality', () => {
   it('DELETEs a file', done => {
     let responseText = 'File portland.txt successfully deleted.';
     req
-            .del('/api/cities/portland')
+            .del('/cities/portland')
             .then(res => {
               expect(res).status(200);
               assert.equal(res.text, responseText);

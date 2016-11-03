@@ -22,6 +22,7 @@
   "homepage": "https://github.com/codefellows-portland-javascript-401d4/express-single-resource#readme",
   "dependencies": {
     "express": "^4.14.0",
+    "mongoose": "^4.6.5",
     "sander": "^0.5.1"
   },
   "devDependencies": {
