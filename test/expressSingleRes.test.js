@@ -23,7 +23,6 @@ describe('http server functionality', () => {
             .set('Content-Type', 'application/json')
             .send(stringPortland)
             .then(res => {
-              console.log('res.text: ', res.text);
               portlandPostId = JSON.parse(res.text)._id;
               assert.equal(JSON.parse(res.text).name, 'portland');
               done();
