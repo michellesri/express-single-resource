@@ -3,52 +3,41 @@ const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const assert = require('chai').assert;
 const expect = require('chai').expect;
-const path = require('path');
-const rimraf = require('rimraf');
-// const mkdirp = require('mkdirp');
-const app = require('../lib/app');
 
-const citiesDir = path.resolve(__dirname, '../cities');
+const app = require('../lib/app');
+require('../lib/mongoose');
 
 describe('http server functionality', () => {
   let req = chai.request(app);
 
-  before(() => {
-    rimraf.sync(citiesDir);
-  });
-
+  const cupertino = {name: 'cupertino'};
   const portland = {name: 'portland'};
-  let stringDush = JSON.stringify(portland);
+  let stringPortland = JSON.stringify(portland);
+  let stringCupertino = JSON.stringify(cupertino);
+  let portlandPostId = '';
 
-  it('accesses empty file before initial POST', done => {
-    req
-            .get('/cities')
-            .then(res => {
-              assert.deepEqual(res.body, {});
-              done();
-            })
-            .catch(done);
-  });
 
   it('POSTs successfully', done => {
-    let responseText = 'File portland.txt successfully created in \'cities\' directory.';
     req
             .post('/cities')
             .set('Content-Type', 'application/json')
-            .send(stringDush)
+            .send(stringPortland)
             .then(res => {
-              assert.equal(res.text, responseText);
+              console.log('res.text: ', res.text);
+              portlandPostId = JSON.parse(res.text)._id;
+              assert.equal(JSON.parse(res.text).name, 'portland');
               done();
             })
             .catch(done);
   });
 
-  it('GETs all files in directory after initial POST', done => {
+  it('GETs files in directory after initial POST', done => {
     req
             .get('/cities')
             .then(res => {
               expect(res).status(200);
-              assert.equal(res.text, 'portland.txt\n');
+              assert.notEqual(JSON.parse(res.text).length, 0);
+              assert.include(res.text, 'portland');
               done();
             })
             .catch(done);
@@ -56,36 +45,34 @@ describe('http server functionality', () => {
 
   it('GETs a single file', done => {
     req
-            .get('/cities/portland')
+            .get('/cities/' + portlandPostId)
             .then(res => {
               expect(res).status(200);
-              assert.equal(res.text, 'portland');
+              assert.equal(JSON.parse(res.text).name, 'portland');
               done();
             })
             .catch(done);
   });
 
   it('replaces a file using PUT', done => {
-    let responseText = 'File portland.txt successfully replaced.';
     req
-            .put('/cities/portland')
+            .put('/cities/' + portlandPostId)
             .set('Content-Type', 'application/json')
-            .send(stringDush)
+            .send(stringCupertino)
             .then(res => {
               expect(res).status(200);
-              assert.equal(res.text, responseText);
+              assert.equal(JSON.parse(res.text).name, 'cupertino');
               done();
             })
             .catch(done);
   });
 
   it('DELETEs a file', done => {
-    let responseText = 'File portland.txt successfully deleted.';
     req
-            .del('/cities/portland')
+            .del('/cities/' + portlandPostId)
             .then(res => {
               expect(res).status(200);
-              assert.equal(res.text, responseText);
+              assert.equal(res.text, '{"ok":1,"n":1}');
               done();
             })
             .catch(done);
