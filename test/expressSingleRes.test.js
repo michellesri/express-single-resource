@@ -24,7 +24,7 @@ describe('http server functionality', () => {
     req
             .get('/api/cities')
             .then(res => {
-              assert.deepEqual(res.body, {});
+              assert.deepEqual(res.body, []);
               done();
             })
             .catch(done);
